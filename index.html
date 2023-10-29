@@ -12,6 +12,7 @@
 	<title>4-5-6 In Row</title>
 	<script type='text/javascript' src='https://jgomezpe.github.io/konekti/src/konekti.js'></script>
 	<script type='text/javascript' src='inrow.js'></script>
+	<script type='text/javascript' src='lineadeCoca.js'></script>
 </head>
 
 <body>
@@ -26,7 +27,7 @@ function KonektiMain(){
 	var client = new Environment()
     client.setPlayers({
         'rand1': new RandomPlayer(),
-        'rand2': new RandomPlayer()
+        'lineaDCoca': new LineaDCoca()
     })
 
 	Konekti.header('title','', 'Reversi', 3, {'class':'w3-black w3-center'} )
