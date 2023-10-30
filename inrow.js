@@ -136,8 +136,8 @@ class RandomPlayer extends Agent{
     compute(board, time){
         var moves = this.board.valid_moves(board)
         var index = Math.floor(moves.length * Math.random())
-        for(var i=0; i<50000000; i++){} // Making it very slow to test time restriction
-        for(var i=0; i<50000000; i++){} // Making it very slow to test time restriction
+        //for(var i=0; i<50000000; i++){} // Making it very slow to test time restriction
+        //for(var i=0; i<50000000; i++){} // Making it very slow to test time restriction
         console.log(this.color + ',' + moves[index])
         return moves[index]
     }
@@ -215,6 +215,9 @@ class Environment extends MainClient{
             start = Date.now()
             var action = x.players[id].compute(b, x.ptime[x.player])
             var end = Date.now()
+
+            console.log("Player " + id + " took " + (end - start) + " ms")
+
             var flag = board.move(x.rb, action, x.player)
             if(!flag){
                 x.winner = nid + ' ...Invalid move taken by ' + id + ' on column ' + action
