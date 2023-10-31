@@ -55,18 +55,21 @@ class LineaDCoca extends Agent {
 
     compute(board, time) {
         var moves = this.boardManager.valid_moves(board)
-        let depth = this.avgConteoColumna(board);
+        let depth = this.evaluateSingle(board, false);
         console.log("depth: " + depth);
         const index = this.alphaBeta(board, depth);
         console.log("index: " + index);
-        console.log("value of borad", this.evaluate(board, true));
+        console.log("value of borad: ", this.evaluate(board, true));
+        console.log("evalue single: ", this.evaluateSingle(board, true));
+        console.log("evalue single malvado: ", this.evaluateSingle(board, false));
 
         console.log(this.color + ',' + moves[index])
         return moves[index]
     }
 
     evaluate(board, isMaximizingPlayer) {
-        return this.evaluateSingle(board, isMaximizingPlayer) - this.evaluateSingle(board, !isMaximizingPlayer);
+        let value = this.evaluateSingle(board, isMaximizingPlayer) - this.evaluateSingle(board, !isMaximizingPlayer);
+        return value <= 0 ? 0 : value;
     }
 
     evaluateSingle(board, isMaximizingPlayer) {
@@ -77,14 +80,14 @@ class LineaDCoca extends Agent {
         let horizontal = [];
         let diagonalI = [];
         let diagonalS = [];
-
-        let conteoVertical = 0;
-        let conteoHorizontal = 0;
-        let conteoDiagonalI = 0;
-        let conteoDiagonalS = 0;
-
-
+        let max = 0;
+        
         for (let i = 0; i < n; i++) {
+            var conteoVertical = 0;
+            var conteoHorizontal = 0;
+            var conteoDiagonalI = 0;
+            var conteoDiagonalS = 0;
+
             for (let j = 0; j < n; j++) {
                 horizontal.push(board[i][j]);
                 vertical.push(board[j][i]);
@@ -96,45 +99,62 @@ class LineaDCoca extends Agent {
 
             }
 
-            let verticalStr = vertical.join("");
-            let horizontalStr = horizontal.join("");
-            let diagonalIStr = diagonalI.join("");
-            let diagonalSStr = diagonalS.join("");
+            const coincidenciaVer = vertical.join("").match(patronPunto);
+            const coincidenciaHor = horizontal.join("").match(patronPunto);
+            const coincidenciaDiagI = diagonalI.join("").match(patronPunto);
+            const coincidenciaDiagS = diagonalS.join("").match(patronPunto);
 
-            const coincidenciaVer = verticalStr.match(patronPunto);
-            const coincidenciaHor = horizontalStr.match(patronPunto);
-            const coincidenciaDiagI = diagonalIStr.match(patronPunto);
-            const coincidenciaDiagS = diagonalSStr.match(patronPunto);
-
+            
             if (coincidenciaVer) {
-                conteoVertical = coincidenciaVer[0].length;
+                //console.log("coincidenciaVer: ", coincidenciaVer[0].length, colorminmax);
+                for (let x = 0; x < coincidenciaVer[0].length; x++) {
+                    if(coincidenciaVer[0][x] == colorminmax){
+                        conteoVertical += 1;
+                    }
+                }
+               
             }
             
             if (coincidenciaHor) {
-                conteoHorizontal = coincidenciaHor[0].length;
+                //console.log("coincidenciaHor: ", coincidenciaHor[0].length, colorminmax);
+                for (let x = 0; x < coincidenciaHor[0].length; x++) {
+                    if(coincidenciaHor[0][x] == colorminmax){
+                        conteoHorizontal += 1;
+                    }
+                }
             }
             
             if (coincidenciaDiagI) {
-                conteoDiagonalI = coincidenciaDiagI[0].length;
+                //console.log("coincidenciaDiagI: ", coincidenciaDiagI[0].length, colorminmax);
+                for (let x = 0; x < coincidenciaDiagI[0].length; x++) {
+                    if(coincidenciaDiagI[0][x] == colorminmax){
+                        conteoDiagonalI += 1;
+                    }
+                }
             }
 
             if (coincidenciaDiagS) {
-                conteoDiagonalS = coincidenciaDiagS[0].length;
+                //console.log("coincidenciaDiagS: ", coincidenciaDiagS[0].length, colorminmax);
+                for (let x = 0; x < coincidenciaDiagS[0].length; x++) {
+                    if(coincidenciaDiagS[0][x] == colorminmax){
+                        conteoDiagonalS += 1;
+                    }
+                }
             }
 
+            max = Math.max(conteoVertical, conteoHorizontal, conteoDiagonalI, conteoDiagonalS, max);
             vertical = []; horizontal = []; diagonalI = []; diagonalS = [];
         }
         
-        return Math.max(conteoVertical, conteoHorizontal, conteoDiagonalS, conteoDiagonalI);
+        return max;
     }
 
     alphaBeta(board, depth) {
         let evaluateIndex = this.minValue(board, -Infinity, Infinity, depth)[1];
         if (evaluateIndex < 0) {
-            console.log("random");
-            return Math.floor(Math.random() * this.boardManager.valid_moves(board).length);
+            let validmoves = this.boardManager.valid_moves(board);
+            return validmoves[Math.floor(Math.random() * validmoves.length)];
         }else{
-            console.log("alphaBeta");
             return evaluateIndex;
         }
     }
@@ -168,9 +188,8 @@ class LineaDCoca extends Agent {
             this.boardManager.move(cloneBoard, moves[i], this.color);
             let minvalue = this.minValue(cloneBoard, alpha, beta, depth-1);
             v = Math.max(v,minvalue[0]);
-            u = (v == minvalue[0]) ? moves[i] : u;
             if (v >= beta) {
-                return [v, u]; 
+                return [v, moves[i]]; 
             }
             alpha = Math.max(alpha, v);
         }
@@ -189,9 +208,8 @@ class LineaDCoca extends Agent {
             this.boardManager.move(cloneBoard, moves[i], this.noColor);
             let maxvalue = this.maxValue(cloneBoard, alpha, beta, depth-1); 
             v = Math.min(v, maxvalue[0]);
-            u = (v == maxvalue[0]) ? moves[i] : u;
-            if (v >= alpha) {
-                return [v, u]; 
+            if (v <= alpha) {
+                return [v, moves[i]]; 
             }
             beta = Math.min(beta, v);
         }
