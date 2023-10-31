@@ -61,6 +61,10 @@ class LineaDCoca extends Agent {
         //console.log("index: " + index);
         console.log("value of borad yo", this.evaluate2(board, this.k, this.color));
         console.log("value of borad EL", this.evaluate2(board, this.k, this.noColor));
+        for (let k = 0; k < board.length; k++) {
+            const fila = board[k];
+            console.log(`${fila}`);
+        }
 
         //console.log(this.color + ',' + moves[index])
         return moves[Math.floor(Math.random()*moves.length)];
@@ -198,40 +202,45 @@ class LineaDCoca extends Agent {
         }
         return [v, u];
     }
-
+    //da las posibilidades que tiene colorminmax para juntar fichas
     evaluate2(board, k, colorminmax){
         var size = board.length
         for( var i=0; i<size; i++){
             for(var j=0; j<size; j++){
                 var p = board[i][j]
                 if(p!=' '){
+                    let c1 = 0;
+                    let c2 = 0;
+                    let c3 = 0;
+                    let c4 = 0;
                     if(j+k<=size && i+k<=size){                        
-                        var c = 1
+                        c1 = 1
                         for(var h=1;h<k; h++)
-                            if(board[i+h][j+h]==colorminmax) c++
-                        return c
+                            if(board[i+h][j+h]==colorminmax) c1++
+                        if(c1==k) return Infinity
                     }
                     if(j+1>=k && i+k<=size){                        
-                        var c = 1
+                        c2 = 1
                         for(var h=1;h<k; h++)
-                            if(board[i+h][j-h]==colorminmax) c++
-                        return c
+                            if(board[i+h][j-h]==colorminmax) c2++
+                        if(c2==k) return Infinity
 
                     }
                     if(j+k<=size){                        
-                        var c = 1
+                        c3 = 1
                         for(var h=1;h<k; h++)
-                            if(board[i][j+h]==colorminmax) c++
-                        return c
+                            if(board[i][j+h]==colorminmax) c3++
+                        if(c3==k) return Infinity
 
                     }
                     if(i+k<=size){
-                        var c = 1
+                        c4 = 1
                         for(var h=1;h<k; h++)
-                            if(board[i+h][j]==colorminmax) c++
+                            if(board[i+h][j]==colorminmax) c4++
                             else break;
-                        return c
+                        if(c4==k) return Infinity
                     }
+                    return c1+c2+c3+c4
                 }
             }
         }      
