@@ -57,7 +57,7 @@ class LineaDCoca extends Agent {
         var moves = this.boardManager.valid_moves(board)
         let depth = this.avgConteoColumna(board);
         console.log("depth: " + depth);
-        //const index = this.alphaBeta(board, depth);
+        let index = this.alphaBeta(board, depth);
         //console.log("index: " + index);
         console.log("value of borad yo", this.evaluate2(board, this.k, this.color));
         console.log("value of borad EL", this.evaluate2(board, this.k, this.noColor));
@@ -65,9 +65,16 @@ class LineaDCoca extends Agent {
             const fila = board[k];
             console.log(`${fila}`);
         }
+        this.boardManager.move(board,moves[index],this.color);
+        var moves = this.boardManager.valid_moves(board)
+        const iChoto = this.choto(board,moves);
+        if (iChoto) {
+            index = iChoto;
+        }
 
         //console.log(this.color + ',' + moves[index])
-        return moves[Math.floor(Math.random()*moves.length)];
+        //return moves[Math.floor(Math.random()*moves.length)];
+        return moves[index]
     }
 
     evaluate(board, isMaximizingPlayer) {
@@ -245,5 +252,20 @@ class LineaDCoca extends Agent {
             }
         }      
         return ' '
+    }
+
+    choto(boardMyMove,moves){
+        for (let i = 0; i < moves.length; i++) {
+            const element = moves[i];
+            const clonTablero = this.boardManager.clone(boardMyMove);
+            this.boardManager.move(clonTablero,moves[i],this.noColor);
+            if (this.winner(clonTablero,this.noColor) != " ") {
+                return i
+            }else{
+                return false
+            }
+            
+        }
+        return false;
     }
 }
