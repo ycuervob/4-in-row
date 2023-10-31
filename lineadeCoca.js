@@ -173,7 +173,7 @@ class LineaDCoca extends Agent {
     }
 
     maxValue(board, alpha, beta, depth) {
-        if (this.winner(board, depth) != ' ') {
+        if (depth <= 0) {
             return [this.evaluate(board, true),-1];
         }
         let moves = this.boardManager.valid_moves(board);
@@ -182,7 +182,7 @@ class LineaDCoca extends Agent {
         for (let i=0; i < moves.length; i++) {
             const cloneBoard = this.boardManager.clone(board);
             this.boardManager.move(cloneBoard, moves[i], this.color);
-            let minvalue = this.minValue(cloneBoard, alpha, beta, depth);
+            let minvalue = this.minValue(cloneBoard, alpha, beta, depth-1);
             v = Math.max(v,minvalue[0]);
             u = (v == minvalue[0]) ? moves[i] : u;
             if (v >= beta) {
@@ -194,7 +194,7 @@ class LineaDCoca extends Agent {
     }
 
     minValue(board, alpha, beta, depth) {
-        if (this.winner(board, depth) != ' ') {
+        if (depth <= 0) {
             return [this.evaluate(board, true),-1];
         }
         let moves = this.boardManager.valid_moves(board);
@@ -203,7 +203,7 @@ class LineaDCoca extends Agent {
         for (let i=0; i < moves.length; i++) {
             const cloneBoard = this.boardManager.clone(board);
             this.boardManager.move(cloneBoard, moves[i], this.noColor);
-            let maxvalue = this.maxValue(cloneBoard, alpha, beta, depth); 
+            let maxvalue = this.maxValue(cloneBoard, alpha, beta, depth-1); 
             v = Math.min(v, maxvalue[0]);
             u = (v == maxvalue[0]) ? moves[i] : u;
             if (v >= alpha) {
