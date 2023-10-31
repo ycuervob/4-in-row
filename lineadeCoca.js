@@ -57,13 +57,31 @@ class LineaDCoca extends Agent {
         var moves = this.boardManager.valid_moves(board)
         let depth = this.evaluateSingle(board, false);
         console.log("depth: " + depth);
+        /** 
         const index = this.alphaBeta(board, depth);
         console.log("index: " + index);
         console.log("value of borad: ", this.evaluate(board, true));
         console.log("evalue single: ", this.evaluateSingle(board, true));
         console.log("evalue single malvado: ", this.evaluateSingle(board, false));
+        */
 
-        console.log(this.color + ',' + moves[index])
+        let index = this.alphaBeta(board, depth);
+        //console.log("index: " + index);
+        console.log("value of borad yo", this.evaluate2(board, this.k, this.color));
+        console.log("value of borad EL", this.evaluate2(board, this.k, this.noColor));
+        for (let k = 0; k < board.length; k++) {
+            const fila = board[k];
+            console.log(`${fila}`);
+        }
+        this.boardManager.move(board,moves[index],this.color);
+        var moves = this.boardManager.valid_moves(board)
+        const iChoto = this.choto(board,moves);
+        if (iChoto) {
+            index = iChoto;
+        }
+
+        //console.log(this.color + ',' + moves[index])
+        //return moves[Math.floor(Math.random()*moves.length)];
         return moves[index]
     }
 
@@ -178,7 +196,7 @@ class LineaDCoca extends Agent {
 
     maxValue(board, alpha, beta, depth) {
         if (depth <= 0 || this.winner(board, this.k) != ' ') {
-            return [this.evaluate(board, true),-1];
+            return [this.evaluate2(board, this.k,this.color),-1];
         }
         let moves = this.boardManager.valid_moves(board);
         let v = -Infinity;
@@ -198,7 +216,7 @@ class LineaDCoca extends Agent {
 
     minValue(board, alpha, beta, depth) {
         if (depth <= 0 || this.winner(board, this.k) != ' ') {
-            return [this.evaluate(board, true),-1];
+            return [this.evaluate2(board, this.k, this.noColor),-1];
         }
         let moves = this.boardManager.valid_moves(board);
         let v = Infinity;
@@ -214,5 +232,64 @@ class LineaDCoca extends Agent {
             beta = Math.min(beta, v);
         }
         return [v, u];
+    }
+    //da las posibilidades que tiene colorminmax para juntar fichas
+    evaluate2(board, k, colorminmax){
+        var size = board.length
+        for( var i=0; i<size; i++){
+            for(var j=0; j<size; j++){
+                var p = board[i][j]
+                if(p!=' '){
+                    let c1 = 0;
+                    let c2 = 0;
+                    let c3 = 0;
+                    let c4 = 0;
+                    if(j+k<=size && i+k<=size){                        
+                        c1 = 1
+                        for(var h=1;h<k; h++)
+                            if(board[i+h][j+h]==colorminmax) c1++
+                        if(c1==k) return Infinity
+                    }
+                    if(j+1>=k && i+k<=size){                        
+                        c2 = 1
+                        for(var h=1;h<k; h++)
+                            if(board[i+h][j-h]==colorminmax) c2++
+                        if(c2==k) return Infinity
+
+                    }
+                    if(j+k<=size){                        
+                        c3 = 1
+                        for(var h=1;h<k; h++)
+                            if(board[i][j+h]==colorminmax) c3++
+                        if(c3==k) return Infinity
+
+                    }
+                    if(i+k<=size){
+                        c4 = 1
+                        for(var h=1;h<k; h++)
+                            if(board[i+h][j]==colorminmax) c4++
+                            else break;
+                        if(c4==k) return Infinity
+                    }
+                    return c1+c2+c3+c4
+                }
+            }
+        }      
+        return ' '
+    }
+
+    choto(boardMyMove,moves){
+        for (let i = 0; i < moves.length; i++) {
+            const element = moves[i];
+            const clonTablero = this.boardManager.clone(boardMyMove);
+            this.boardManager.move(clonTablero,moves[i],this.noColor);
+            if (this.winner(clonTablero,this.noColor) != " ") {
+                return i
+            }else{
+                return false
+            }
+            
+        }
+        return false;
     }
 }
