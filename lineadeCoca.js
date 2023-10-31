@@ -57,12 +57,13 @@ class LineaDCoca extends Agent {
         var moves = this.boardManager.valid_moves(board)
         let depth = this.avgConteoColumna(board);
         console.log("depth: " + depth);
-        const index = this.alphaBeta(board, depth);
-        console.log("index: " + index);
-        console.log("value of borad", this.evaluate(board, true));
+        //const index = this.alphaBeta(board, depth);
+        //console.log("index: " + index);
+        console.log("value of borad yo", this.evaluate2(board, this.k, this.color));
+        console.log("value of borad EL", this.evaluate2(board, this.k, this.noColor));
 
-        console.log(this.color + ',' + moves[index])
-        return moves[index]
+        //console.log(this.color + ',' + moves[index])
+        return moves[Math.floor(Math.random()*moves.length)];
     }
 
     evaluate(board, isMaximizingPlayer) {
@@ -158,7 +159,7 @@ class LineaDCoca extends Agent {
 
     maxValue(board, alpha, beta, depth) {
         if (depth <= 0 || this.winner(board, this.k) != ' ') {
-            return [this.evaluate(board, true),-1];
+            return [this.evaluate2(board, this.k,this.color),-1];
         }
         let moves = this.boardManager.valid_moves(board);
         let v = -Infinity;
@@ -179,7 +180,7 @@ class LineaDCoca extends Agent {
 
     minValue(board, alpha, beta, depth) {
         if (depth <= 0 || this.winner(board, this.k) != ' ') {
-            return [this.evaluate(board, true),-1];
+            return [this.evaluate2(board, this.k, this.noColor),-1];
         }
         let moves = this.boardManager.valid_moves(board);
         let v = Infinity;
@@ -196,5 +197,44 @@ class LineaDCoca extends Agent {
             beta = Math.min(beta, v);
         }
         return [v, u];
+    }
+
+    evaluate2(board, k, colorminmax){
+        var size = board.length
+        for( var i=0; i<size; i++){
+            for(var j=0; j<size; j++){
+                var p = board[i][j]
+                if(p!=' '){
+                    if(j+k<=size && i+k<=size){                        
+                        var c = 1
+                        for(var h=1;h<k; h++)
+                            if(board[i+h][j+h]==colorminmax) c++
+                        return c
+                    }
+                    if(j+1>=k && i+k<=size){                        
+                        var c = 1
+                        for(var h=1;h<k; h++)
+                            if(board[i+h][j-h]==colorminmax) c++
+                        return c
+
+                    }
+                    if(j+k<=size){                        
+                        var c = 1
+                        for(var h=1;h<k; h++)
+                            if(board[i][j+h]==colorminmax) c++
+                        return c
+
+                    }
+                    if(i+k<=size){
+                        var c = 1
+                        for(var h=1;h<k; h++)
+                            if(board[i+h][j]==colorminmax) c++
+                            else break;
+                        return c
+                    }
+                }
+            }
+        }      
+        return ' '
     }
 }
