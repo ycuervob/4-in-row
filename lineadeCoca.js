@@ -55,10 +55,7 @@ class LineaDCoca extends Agent {
 
     compute(board, time) {
         var moves = this.boardManager.valid_moves(board)
-        const index = this.alphaBeta(board);
-
-        console.log("maxConsecutiveEnemy: " + this.maxConsecutiveEnemy(board));
-
+        const index = this.alphaBeta(board, this.maxConteoColumna(board));
         console.log("index: " + index);
 
         console.log(this.color + ',' + moves[index])
@@ -145,8 +142,8 @@ class LineaDCoca extends Agent {
         return (conteoVertical + conteoHorizontal + conteoDiagonalS + conteoDiagonalI);
     }
 
-    alphaBeta(board) {
-        let evaluateIndex = this.minValue(board, -Infinity, Infinity)[1];
+    alphaBeta(board, depth) {
+        let evaluateIndex = this.minValue(board, -Infinity, Infinity, depth)[1];
         if (evaluateIndex < 0) {
             console.log("random");
             return Math.floor(Math.random() * this.boardManager.valid_moves(board).length);
@@ -156,57 +153,27 @@ class LineaDCoca extends Agent {
         }
     }
 
-    maxConsecutiveEnemy(board) {
+    maxConteoColumna(board) {
         let n = board.length;
-        let colorminmax = this.noColor;
-        const patronPunto = new RegExp(`[${colorminmax}]{2,}`, "g");
-        let vertical = [];
-        let horizontal = [];
-        let diagonalI = [];
-        let diagonalS = [];
-
         let conteo = 0;
 
         for (let i = 0; i < n; i++) {
+            let valor_columna = 0;
             for (let j = 0; j < n; j++) {
-                horizontal.push(board[i][j]);
-                vertical.push(board[j][i]);
-
-                if (i + j < n) {
-                    diagonalI.push(board[i][i + j]);
-                    diagonalS.push(board[i + j][i]);
+                if (board[i][j] != ' ') {
+                    valor_columna += 1;
                 }
-
             }
-
-            let verticalStr = vertical.join("");
-            let horizontalStr = horizontal.join("");
-            let diagonalIStr = diagonalI.join("");
-            let diagonalSStr = diagonalS.join("");
-
-            const coincidenciaVer = verticalStr.match(patronPunto)?.map(function (s) { return s.length; });
-            const coincidenciaHor = horizontalStr.match(patronPunto)?.map(function (s) { return s.length; });
-            const coincidenciaDiagI = diagonalIStr.match(patronPunto)?.map(function (s) { return s.length; });
-            const coincidenciaDiagS = diagonalSStr.match(patronPunto)?.map(function (s) { return s.length; });
-            
-            console.log("coincidenciaVer: " + coincidenciaVer);
-            console.log("coincidenciaHor: " + coincidenciaHor);
-            console.log("coincidenciaDiagI: " + coincidenciaDiagI);
-            console.log("coincidenciaDiagS: " + coincidenciaDiagS);
-
-            const conteoVertical = coincidenciaVer ? coincidenciaVer.reduce(function(max, length) {return Math.max(max, length);}, 0) : 0;
-            const conteoHorizontal = coincidenciaHor ? coincidenciaHor.reduce(function(max, length) {return Math.max(max, length);}, 0) : 0;
-            const conteoDiagonalI = coincidenciaDiagI ? coincidenciaDiagI.reduce(function(max, length) {return Math.max(max, length);}, 0) : 0;
-            const conteoDiagonalS = coincidenciaDiagS ? coincidenciaDiagS.reduce(function(max, length) {return Math.max(max, length);}, 0) : 0;
-            
-            conteo = Math.max(conteoVertical, conteoHorizontal, conteoDiagonalI, conteoDiagonalS);
+            if (valor_columna > conteo) {
+                conteo = valor_columna;
+            }
         }
 
         return conteo;
     }
 
-    maxValue(board, alpha, beta) {
-        if (this.winner(board, 2) != ' ') {
+    maxValue(board, alpha, beta, depth) {
+        if (this.winner(board, depth) != ' ') {
             return [this.evaluate(board, true),-1];
         }
         let moves = this.boardManager.valid_moves(board);
@@ -215,7 +182,7 @@ class LineaDCoca extends Agent {
         for (let i=0; i < moves.length; i++) {
             const cloneBoard = this.boardManager.clone(board);
             this.boardManager.move(cloneBoard, moves[i], this.color);
-            let minvalue = this.minValue(cloneBoard, alpha, beta);
+            let minvalue = this.minValue(cloneBoard, alpha, beta, depth);
             v = Math.max(v,minvalue[0]);
             u = (v == minvalue[0]) ? moves[i] : u;
             if (v >= beta) {
@@ -226,8 +193,8 @@ class LineaDCoca extends Agent {
         return [v, u];
     }
 
-    minValue(board, alpha, beta) {
-        if (this.winner(board, 2) != ' ') {
+    minValue(board, alpha, beta, depth) {
+        if (this.winner(board, depth) != ' ') {
             return [this.evaluate(board, true),-1];
         }
         let moves = this.boardManager.valid_moves(board);
@@ -236,7 +203,7 @@ class LineaDCoca extends Agent {
         for (let i=0; i < moves.length; i++) {
             const cloneBoard = this.boardManager.clone(board);
             this.boardManager.move(cloneBoard, moves[i], this.noColor);
-            let maxvalue = this.maxValue(cloneBoard, alpha, beta); 
+            let maxvalue = this.maxValue(cloneBoard, alpha, beta, depth); 
             v = Math.min(v, maxvalue[0]);
             u = (v == maxvalue[0]) ? moves[i] : u;
             if (v >= alpha) {
