@@ -55,8 +55,11 @@ class LineaDCoca extends Agent {
 
     compute(board, time) {
         var moves = this.boardManager.valid_moves(board)
-        const index = this.alphaBeta(board, this.maxConteoColumna(board));
+        let depth = this.avgConteoColumna(board);
+        console.log("depth: " + depth);
+        const index = this.alphaBeta(board, depth);
         console.log("index: " + index);
+        console.log("value of borad", this.evaluate(board, true));
 
         console.log(this.color + ',' + moves[index])
         return moves[index]
@@ -153,7 +156,7 @@ class LineaDCoca extends Agent {
         }
     }
 
-    maxConteoColumna(board) {
+    avgConteoColumna(board) {
         let n = board.length;
         let conteo = 0;
 
@@ -164,16 +167,14 @@ class LineaDCoca extends Agent {
                     valor_columna += 1;
                 }
             }
-            if (valor_columna > conteo) {
-                conteo = valor_columna;
-            }
+            conteo += valor_columna;
         }
 
-        return conteo;
+        return Math.floor(conteo / n);
     }
 
     maxValue(board, alpha, beta, depth) {
-        if (depth <= 0) {
+        if (depth <= 0 || this.winner(board, this.k) != ' ') {
             return [this.evaluate(board, true),-1];
         }
         let moves = this.boardManager.valid_moves(board);
@@ -194,7 +195,7 @@ class LineaDCoca extends Agent {
     }
 
     minValue(board, alpha, beta, depth) {
-        if (depth <= 0) {
+        if (depth <= 0 || this.winner(board, this.k) != ' ') {
             return [this.evaluate(board, true),-1];
         }
         let moves = this.boardManager.valid_moves(board);
