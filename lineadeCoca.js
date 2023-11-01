@@ -17,7 +17,6 @@ class LineaDCoca extends Agent {
     compute(board, time) {
         let index = 0;
         let moves = this.boardManager.valid_moves(board);
-
         index = this.algoritmo(board,moves);
         
         return moves[index];
@@ -100,25 +99,21 @@ class LineaDCoca extends Agent {
         return ' '
     }
 
-    //TODO organiza los movimientos de mejor a peor
+    //organiza los movimientos de mejor a peor
     searchBestMovement(board,moves,colorminmax){
-        mejorResultado = -Infinity;
-        let index = -1;
+        let iMoves = [];
+
         for (let i = 0; i < moves.length; i++) {
             const move = moves[i];
             const clonTablero = this.boardManager.clone(board);
             this.boardManager.move(clonTablero,move,colorminmax);
             const resultado = this.evaluate(clonTablero, this.k, colorminmax);
-            if (resultado == Infinity) {
-                //TODO avisar y actuar en consecuencia
-            }
-            console.log("resultado", resultado);
-            if (resultado !== " ") {
-                if (resultado >= mejorResultado) {
-                    index = i;
-                }
-            }            
+            iMoves.push([resultado,i]);          
         }
+
+        iMoves = iMoves.sort((a, b)=> {return a[0] - b[0]});
+        console.log(iMoves);
+        return iMoves.map((a)=>{return a[1]});
     }
 
 }
