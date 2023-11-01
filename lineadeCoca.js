@@ -17,11 +17,9 @@ class LineaDCoca extends Agent {
     compute(board, time) {
         let index = 0;
         var moves = this.boardManager.valid_moves(board)
-        const iChoto = this.choto(board,moves);
-        if (iChoto) {
-            index = iChoto;
-        }
-        return moves[index]
+        const iChoto = this.searchBestMovement(board,moves);
+        index = iChoto ? iChoto : moves[Math.floor(Math.random() * moves.length)];
+        return moves[index];
     }
 
     //da las posibilidades que tiene colorminmax para juntar fichas
@@ -69,12 +67,14 @@ class LineaDCoca extends Agent {
         return ' '
     }
 
-    choto(boardMyMove,moves){
+    searchBestMovement(board,moves){
         for (let i = 0; i < moves.length; i++) {
-            const element = moves[i];
-            const clonTablero = this.boardManager.clone(boardMyMove);
-            this.boardManager.move(clonTablero,moves[i],this.noColor);
-            if (this.winner(clonTablero,this.noColor) != " ") {
+            const move = moves[i];
+            const clonTablero = this.boardManager.clone(board);
+            this.boardManager.move(clonTablero,move,this.noColor);
+
+
+            if (this.evaluate(clonTablero,this.noColor) != " ") {
                 return i
             }else{
                 return false
