@@ -83,7 +83,7 @@ class LineaDCoca extends Agent {
             const move = moves[i];
             const clonTablero = this.boardManager.clone(board);
             this.boardManager.move(clonTablero,move,colorminmax);
-            if (this.evaluate(clonTablero, this.k,this.noColor) != " ") {
+            if (this.evaluate(clonTablero, this.k, colorminmax) != " ") {
                 return i
             }else{
                 return false
