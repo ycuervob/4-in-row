@@ -28,7 +28,8 @@ class LineaDCoca extends Agent {
         moves = this.boardManager.valid_moves(clonTablero);
         const iChoto = this.searchBestMovement(clonTablero,moves,this.noColor);
 
-        index = iChoto ? iChoto : moves[Math.floor(Math.random() * moves.length)];
+        let indexRandom = moves[Math.floor(Math.random() * moves.length)];
+        index = iFino ? ( iChoto ? iChoto : indexRandom ) :  indexRandom;
         return moves[index];
     }
 
