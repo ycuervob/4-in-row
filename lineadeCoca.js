@@ -16,8 +16,18 @@ class LineaDCoca extends Agent {
 
     compute(board, time) {
         let index = 0;
-        var moves = this.boardManager.valid_moves(board)
-        const iChoto = this.searchBestMovement(board,moves);
+        let moves = this.boardManager.valid_moves(board);
+
+        //mejor movimiento fino
+        const iFino = this.searchBestMovement(board,moves,this.color);
+        const clonTablero = this.boardManager.clone(board);
+
+
+        //mejor movimiento choto
+        this.boardManager.move(clonTablero,moves[iFino],this.noColor);
+        moves = this.boardManager.valid_moves(clonTablero);
+        const iChoto = this.searchBestMovement(clonTablero,moves,this.noColor);
+
         index = iChoto ? iChoto : moves[Math.floor(Math.random() * moves.length)];
         return moves[index];
     }
@@ -67,11 +77,11 @@ class LineaDCoca extends Agent {
         return ' '
     }
 
-    searchBestMovement(board,moves){
+    searchBestMovement(board,moves,colorminmax){
         for (let i = 0; i < moves.length; i++) {
             const move = moves[i];
             const clonTablero = this.boardManager.clone(board);
-            this.boardManager.move(clonTablero,move,this.noColor);
+            this.boardManager.move(clonTablero,move,colorminmax);
 
 
             if (this.evaluate(clonTablero,this.noColor) != " ") {
