@@ -107,42 +107,25 @@ class LineaDCoca extends Agent {
             const coincidenciaDiagS = diagonalSStr.match(patronPunto);
 
             if (coincidenciaVer) {
-                for (let x = 0; x < coincidenciaVer[0].length; x++) {
-                    if(coincidenciaVer[0][x] == colorminmax){
-                        conteoHorizontal += 1;
-                    }
-                }
-               
+                conteoVertical = coincidenciaVer[0].length;
             }
             
             if (coincidenciaHor) {
-                for (let x = 0; x < coincidenciaHor[0].length; x++) {
-                    if(coincidenciaHor[0][x] == colorminmax){
-                        conteoHorizontal += 1;
-                    }
-                }
+                conteoHorizontal = coincidenciaHor[0].length;
             }
             
             if (coincidenciaDiagI) {
-                for (let x = 0; x < coincidenciaDiagI[0].length; x++) {
-                    if(coincidenciaDiagI[0][x] == colorminmax){
-                        conteoDiagonalI += 1;
-                    }
-                }
+                conteoDiagonalI = coincidenciaDiagI[0].length;
             }
 
             if (coincidenciaDiagS) {
-                for (let x = 0; x < coincidenciaDiagS[0].length; x++) {
-                    if(coincidenciaDiagS[0][x] == colorminmax){
-                        conteoDiagonalS += 1;
-                    }
-                }
+                conteoDiagonalS = coincidenciaDiagS[0].length;
             }
 
             vertical = []; horizontal = []; diagonalI = []; diagonalS = [];
         }
         
-        return (conteoVertical + conteoHorizontal + conteoDiagonalS + conteoDiagonalI);
+        return Math.max(conteoVertical, conteoHorizontal, conteoDiagonalS, conteoDiagonalI);
     }
 
     alphaBeta(board, depth) {
