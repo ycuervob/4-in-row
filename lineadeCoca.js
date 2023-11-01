@@ -28,7 +28,7 @@ class LineaDCoca extends Agent {
         moves = this.boardManager.valid_moves(clonTablero);
         const iChoto = this.searchBestMovement(clonTablero,moves,this.noColor);
 
-        let indexRandom = moves[Math.floor(Math.random() * moves.length)];
+        let indexRandom = 9;
         index = iFino ? ( iChoto ? iChoto : indexRandom ) :  indexRandom;
         return moves[index];
     }
@@ -83,9 +83,7 @@ class LineaDCoca extends Agent {
             const move = moves[i];
             const clonTablero = this.boardManager.clone(board);
             this.boardManager.move(clonTablero,move,colorminmax);
-
-
-            if (this.evaluate(clonTablero,this.noColor) != " ") {
+            if (this.evaluate(clonTablero, this.k,this.noColor) != " ") {
                 return i
             }else{
                 return false

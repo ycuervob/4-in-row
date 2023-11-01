@@ -135,7 +135,7 @@ class RandomPlayer extends Agent{
 
     compute(board, time){
         var moves = this.board.valid_moves(board)
-        var index = Math.floor(moves.length * Math.random())
+        var index = 2;
         //for(var i=0; i<50000000; i++){} // Making it very slow to test time restriction
         //for(var i=0; i<50000000; i++){} // Making it very slow to test time restriction
         console.log(this.color + ',' + moves[index])
